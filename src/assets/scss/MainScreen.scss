@@ -241,7 +241,7 @@
     width: 74%;
     height: 83%;
     z-index: 5;
-    background-color: #000;
+    background-color: #011600;
     border-radius: 20% / 5%;
     overflow: hidden;
     @include flex-center;
@@ -273,7 +273,6 @@
 
 .retro .screen_wrapper {
   .mainScreen {
-    background-color: #1a1a1a;
     font-family: 'Courier New', Courier, monospace;
     overflow: hidden;
 
@@ -535,16 +534,19 @@
   .mainScreen {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #e0faff;
-    background-color: #050a10;
     overflow: hidden;
 
-    .retro-monitor .crt-screen {
-      top: 40.5%;
-      left: 50%;
-      width: 90%;
-      height: 73%;
-      border-radius: 0px;
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+    .retro-monitor {
+      .crt-screen {
+        top: 40.5%;
+        left: 50%;
+        width: 90%;
+        height: 73%;
+        border-radius: 0px;
+        box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+        background-color: #050a10;
+        padding: 20px 40px;
+      }
     }
 
     .caesar-container {
