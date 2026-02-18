@@ -51,6 +51,14 @@ export function getLocale() {
   return locale;
 }
 
+export function setLocale(newLocale) {
+  if (isValidLocale(newLocale)) {
+    locale = newLocale;
+    return true;
+  }
+  return false;
+}
+
 function getUserLocale() {
   // Locale in URL
   let urlParams = readURLparams();

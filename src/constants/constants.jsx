@@ -10,11 +10,21 @@ export const MAIN_SCREEN = "MAIN_SCREEN";
 
 export const THEMES = {
   STANDARD: "STANDARD",
+  RETRO: "RETRO",
+  FUTURISTIC: "FUTURISTIC",
 };
 
 export const THEME_ASSETS = {
   [THEMES.STANDARD]: {
-    backgroundImg: "/images/bg_standard.png",
+    // backgroundImg: "/images/bg_standard.png",
   },
+  [THEMES.RETRO]: {
+    backgroundImg: "NONE",
+    screenImage: "/images/retro/screen_frame.png",
+  },
+  [THEMES.FUTURISTIC]: {
+    backgroundImg: "NONE",
+    screenImage: "/images/futuristic/screen_frame.png",
+  }
 };
 

@@ -1,14 +1,169 @@
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import "./../assets/scss/MainScreen.scss";
 import { GlobalContext } from "./GlobalContext.jsx";
-
+import { THEMES } from "../constants/constants.jsx";
 
 export default function MainScreen({ solvePuzzle, solved }) {
-    const { appSettings: config} = useContext(GlobalContext);
+    const { appSettings: config, I18n } = useContext(GlobalContext);
+    const [inputText, setInputText] = useState("");
+    const [shift, setShift] = useState(1);
+    const [mode, setMode] = useState("encrypt"); // "encrypt" or "decrypt"
+    const [outputText, setOutputText] = useState("");
+    const [lang, setLang] = useState(I18n.getLocale() || "es");
+
+    const ALPHABET_ES = "abcdefghijklmnñopqrstuvwxyz";
+    const ALPHABET_EN = "abcdefghijklmnopqrstuvwxyz";
+    // Simplified Serbian Latin alphabet (single chars)
+    const ALPHABET_SR = "abcčćdđefghijklmnoprsštuvzž";
+
+    const getAlphabet = (currentLang) => {
+        if (currentLang === "sr") return ALPHABET_SR;
+        if (currentLang === "en") return ALPHABET_EN;
+        return ALPHABET_ES;
+    };
+
+    const caesarCipher = (str, shift, mode, currentLang) => {
+        const alphabet = getAlphabet(currentLang);
+        const alphabetUpper = alphabet.toUpperCase();
+        const length = alphabet.length;
+
+        // Normalize shift
+        let actualShift = parseInt(shift) || 0;
+        if (actualShift < 0) actualShift = length + (actualShift % length);
+
+        // If decrypting, reverse the shift
+        if (mode === "decrypt") {
+            actualShift = (length - (actualShift % length)) % length;
+        }
+
+        return str.split("").map(char => {
+            const indexLower = alphabet.indexOf(char);
+            if (indexLower !== -1) {
+                return alphabet[(indexLower + actualShift) % length];
+            }
+
+            const indexUpper = alphabetUpper.indexOf(char);
+            if (indexUpper !== -1) {
+                return alphabetUpper[(indexUpper + actualShift) % length];
+            }
+
+            return char;
+        }).join("");
+    };
+
+    const handleLangChange = (newLang) => {
+        if (I18n.setLocale(newLang)) {
+            setLang(newLang);
+        }
+    };
+
+    useEffect(() => {
+        setOutputText(caesarCipher(inputText, shift, mode, lang));
+    }, [inputText, shift, mode, lang]);
+
+    const alphabetLength = getAlphabet(lang).length;
+    const hasScreenFrame = config.skin === THEMES.RETRO || config.skin === THEMES.FUTURISTIC;
+
+    const caesarContent = (
+        <div className="caesar-container">
+            <div className="header-row">
+                <h1 className="title">{I18n.getTrans("i.caesarTitle")}</h1>
+                {!config.locale && (
+                    <div className="language-switch">
+                        <button
+                            className={lang === "es" ? "active" : ""}
+                            onClick={() => handleLangChange("es")}
+                        >
+                            ES
+                        </button>
+                        <button
+                            className={lang === "en" ? "active" : ""}
+                            onClick={() => handleLangChange("en")}
+                        >
+                            EN
+                        </button>
+                        <button
+                            className={lang === "sr" ? "active" : ""}
+                            onClick={() => handleLangChange("sr")}
+                        >
+                            SR
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            <div className="controls">
+                <div className="control-group">
+                    <label>{I18n.getTrans("i.shift")}</label>
+                    <input
+                        type="number"
+                        value={shift}
+                        onChange={(e) => setShift(parseInt(e.target.value))}
+                        min="1"
+                        max={alphabetLength - 1}
+                    />
+                </div>
+
+                <div className="control-group mode-switch">
+                    <button
+                        className={mode === "encrypt" ? "active" : ""}
+                        onClick={() => setMode("encrypt")}
+                    >
+                        {I18n.getTrans("i.encrypt")}
+                    </button>
+                    <button
+                        className={mode === "decrypt" ? "active" : ""}
+                        onClick={() => setMode("decrypt")}
+                    >
+                        {I18n.getTrans("i.decrypt")}
+                    </button>
+                </div>
+            </div>
+
+            <div className="text-areas">
+                <div className="text-group">
+                    <label>{I18n.getTrans("i.inputLabel")}</label>
+                    <textarea
+                        value={inputText}
+                        onChange={(e) => setInputText(e.target.value)}
+                        placeholder={I18n.getTrans("i.inputPlaceholder")}
+                        spellCheck="false"
+                    />
+                </div>
+
+                <div className="text-group">
+                    <label>{I18n.getTrans("i.outputLabel")}</label>
+                    <textarea
+                        value={outputText}
+                        readOnly
+                        placeholder={I18n.getTrans("i.outputPlaceholder")}
+                        spellCheck="false"
+                    />
+                </div>
+            </div>
+        </div>
+    );
 
     return (
         <div className={`mainScreen`}>
-            
+            {hasScreenFrame ? (
+                <div className="retro-monitor">
+                    {/* The Screen Content (Behind the Frame) */}
+                    <div className="crt-screen">
+                        <div className="screen-background">
+                            {caesarContent}
+                        </div>
+                    </div>
+                    {/* The Frame Overlay (On top of content) */}
+                    <img
+                        src={config.screenImage || config.screenFrameImage}
+                        className="monitor-frame"
+                        alt="Monitor Frame"
+                    />
+                </div>
+            ) : (
+                caesarContent
+            )}
         </div>
     );
 }

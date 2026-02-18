@@ -2,8 +2,9 @@
 
 export let ESCAPP_APP_SETTINGS = {
   //Settings that can be specified by the authors
-
-
+  skin: "FUTURISTIC",
+  //Settings that will be automatically specified by the Escapp server
+  // locale: "es", //if locale is undefined, you can set locale in app
 
   escappClientSettings: {
     endpoint: "https://escapp.es/api/escapeRooms/id",
