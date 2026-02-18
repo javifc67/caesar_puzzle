@@ -19,6 +19,7 @@ export default function App() {
   const [screen, setScreen] = useState(MAIN_SCREEN);
   const prevScreen = useRef(screen);
   const [solved, setSolved] = useState(false);
+  const [solvedTrigger, setSolvedTrigger] = useState(0);
 
   useEffect(() => {
     if (escapp !== null) {
@@ -85,6 +86,15 @@ export default function App() {
         setSolved(true);
       }
     }
+    const _settings = escapp.getSettings();
+    if (!_settings.linkedPuzzleIds || _settings.linkedPuzzleIds.length === 0) {
+      setAppSettings((prevSettings) => {
+        return {
+          ...prevSettings,
+          hasLinkedPuzzles: false,
+        };
+      });
+    }
   }
 
   function processAppSettings(_appSettings) {
@@ -138,6 +148,7 @@ export default function App() {
           Utils.log("Error in checkNextPuzzle", e);
         }
       }
+      setSolvedTrigger((prev) => prev + 1);
     });
   }
   function submitPuzzleSolution(_solution) {
@@ -173,7 +184,7 @@ export default function App() {
             width: "100%",
           }}
         >
-          <MainScreen solvePuzzle={solvePuzzle} solved={solved} />
+          <MainScreen solvePuzzle={solvePuzzle} solved={solved} solvedTrigger={solvedTrigger} />
         </div>
       ),
     }

@@ -68,6 +68,18 @@
       flex-direction: column;
       gap: 1.5rem;
       border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: box-shadow 0.3s, border-color 0.3s;
+
+      &.success {
+        box-shadow: 0 0 30px rgba(50, 255, 50, 0.5);
+        border-color: rgba(50, 255, 50, 0.5);
+      }
+
+      &.error {
+        box-shadow: 0 0 30px rgba(255, 50, 50, 0.5);
+        border-color: rgba(255, 50, 50, 0.5);
+        animation: shake 0.5s;
+      }
 
       .header-row {
         @include flex-center;
@@ -235,13 +247,13 @@
 
   .crt-screen {
     position: absolute;
-    top: 44%;
+    top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 74%;
-    height: 83%;
+    height: 85%;
     z-index: 5;
-    background-color: #011600;
+    background-color: #1a1a1a;
     border-radius: 20% / 5%;
     overflow: hidden;
     @include flex-center;
@@ -287,6 +299,21 @@
       flex-direction: column;
       gap: 0;
       border: 2px solid #fff;
+      z-index: 15;
+      position: relative;
+      transition: box-shadow 0.3s, border-color 0.3s;
+
+      &.success {
+        border-color: #00ff00;
+        box-shadow: 0 0 10px #00ff00;
+      }
+
+      &.error {
+        border-color: #ff0000;
+        box-shadow: 0 0 10px #ff0000;
+        animation: shake 0.5s;
+      }
+
       z-index: 15;
       position: relative;
 
@@ -530,6 +557,28 @@
   }
 }
 
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-5px);
+  }
+
+  50% {
+    transform: translateX(5px);
+  }
+
+  75% {
+    transform: translateX(-5px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
 .futuristic .screen_wrapper {
   .mainScreen {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -559,12 +608,24 @@
       background: rgba(5, 15, 30, 0.95);
       border: 1px solid rgba(0, 240, 255, 0.3);
       box-shadow: none;
+      transition: box-shadow 0.3s, border-color 0.3s;
+
+      &.success {
+        border-color: #00ff00;
+        box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+      }
+
+      &.error {
+        border-color: #ff0000;
+        box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+        animation: shake 0.5s;
+      }
+
       padding: 1.5rem;
       border-radius: 4px;
       position: relative;
-      background-image:
-        linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+      background-image: linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
       background-size: 30px 30px;
 
       &::before {

@@ -3,13 +3,14 @@ import "./../assets/scss/MainScreen.scss";
 import { GlobalContext } from "./GlobalContext.jsx";
 import { THEMES } from "../constants/constants.jsx";
 
-export default function MainScreen({ solvePuzzle, solved }) {
+export default function MainScreen({ solvePuzzle, solved, solvedTrigger }) {
     const { appSettings: config, I18n } = useContext(GlobalContext);
     const [inputText, setInputText] = useState("");
     const [shift, setShift] = useState(1);
-    const [mode, setMode] = useState("encrypt"); // "encrypt" or "decrypt"
+    const [mode, setMode] = useState(config.hasLinkedPuzzles ? null : "encrypt"); // "encrypt", "decrypt" or null
     const [outputText, setOutputText] = useState("");
-    const [lang, setLang] = useState(I18n.getLocale() || "es");
+    const [lang, setLang] = useState(I18n.getLocale() || "en");
+    const [feedbackStatus, setFeedbackStatus] = useState(null);
 
     const ALPHABET_ES = "abcdefghijklmnñopqrstuvwxyz";
     const ALPHABET_EN = "abcdefghijklmnopqrstuvwxyz";
@@ -58,14 +59,39 @@ export default function MainScreen({ solvePuzzle, solved }) {
     };
 
     useEffect(() => {
-        setOutputText(caesarCipher(inputText, shift, mode, lang));
-    }, [inputText, shift, mode, lang]);
+        // feedback to user if is solved
+        if (solvedTrigger > 0) {
+            if (solved) {
+                setFeedbackStatus("success");
+            } else {
+                setFeedbackStatus("error");
+                setTimeout(() => setFeedbackStatus(null), 1000);
+            }
+        }
+    }, [solvedTrigger, solved]);
+
+    useEffect(() => {
+        if (!config.hasLinkedPuzzles) {
+            const currentMode = mode || "encrypt";
+            setOutputText(caesarCipher(inputText, shift, currentMode, lang));
+        }
+    }, [inputText, shift, mode, lang, config.hasLinkedPuzzles]);
+
+    const handleModeClick = (action) => {
+        if (config.hasLinkedPuzzles) {
+            const result = caesarCipher(inputText, shift, action, lang);
+            setOutputText(result);
+            solvePuzzle(result);
+        } else {
+            setMode(action);
+        }
+    };
 
     const alphabetLength = getAlphabet(lang).length;
     const hasScreenFrame = config.skin === THEMES.RETRO || config.skin === THEMES.FUTURISTIC;
 
     const caesarContent = (
-        <div className="caesar-container">
+        <div className={`caesar-container ${feedbackStatus || ""}`}>
             <div className="header-row">
                 <h1 className="title">{I18n.getTrans("i.caesarTitle")}</h1>
                 {!config.locale && (
@@ -107,13 +133,13 @@ export default function MainScreen({ solvePuzzle, solved }) {
                 <div className="control-group mode-switch">
                     <button
                         className={mode === "encrypt" ? "active" : ""}
-                        onClick={() => setMode("encrypt")}
+                        onClick={() => handleModeClick("encrypt")}
                     >
                         {I18n.getTrans("i.encrypt")}
                     </button>
                     <button
                         className={mode === "decrypt" ? "active" : ""}
-                        onClick={() => setMode("decrypt")}
+                        onClick={() => handleModeClick("decrypt")}
                     >
                         {I18n.getTrans("i.decrypt")}
                     </button>

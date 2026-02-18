@@ -1,6 +1,7 @@
 export const DEFAULT_APP_SETTINGS = {
   skin: "STANDARD", //skin can be STANDARD
   backgroundImg: "NONE", //background can be "NONE" or a URL.
+  hasLinkedPuzzles: true,
 };
 
 export const ESCAPP_CLIENT_SETTINGS = {
