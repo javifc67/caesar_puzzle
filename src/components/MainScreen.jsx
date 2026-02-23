@@ -10,6 +10,7 @@ export default function MainScreen({ solvePuzzle, solved, solvedTrigger }) {
     const [mode, setMode] = useState(config.hasLinkedPuzzles ? null : "encrypt"); // "encrypt", "decrypt" or null
     const [outputText, setOutputText] = useState("");
     const [lang, setLang] = useState(I18n.getLocale() || "en");
+    const [caseOption, setCaseOption] = useState("upper");
     const [feedbackStatus, setFeedbackStatus] = useState(null);
 
     const ALPHABET_ES = "abcdefghijklmnñopqrstuvwxyz";
@@ -17,38 +18,33 @@ export default function MainScreen({ solvePuzzle, solved, solvedTrigger }) {
     // Simplified Serbian Latin alphabet (single chars)
     const ALPHABET_SR = "abcčćdđefghijklmnoprsštuvzž";
 
-    const getAlphabet = (currentLang) => {
-        if (currentLang === "sr") return ALPHABET_SR;
-        if (currentLang === "en") return ALPHABET_EN;
-        return ALPHABET_ES;
+    const getAlphabet = (currentLang, currentCase) => {
+        let base = ALPHABET_ES;
+        if (currentLang === "sr") base = ALPHABET_SR;
+        if (currentLang === "en") base = ALPHABET_EN;
+        return currentCase === "both" ? base + base.toUpperCase() : base.toUpperCase();
     };
 
-    const caesarCipher = (str, shift, mode, currentLang) => {
-        const alphabet = getAlphabet(currentLang);
-        const alphabetUpper = alphabet.toUpperCase();
+    const caesarCipher = (str, currentShift, currentMode, currentLang, currentCase) => {
+        const alphabet = getAlphabet(currentLang, currentCase);
         const length = alphabet.length;
 
         // Normalize shift
-        let actualShift = parseInt(shift) || 0;
+        let actualShift = parseInt(currentShift) || 0;
         if (actualShift < 0) actualShift = length + (actualShift % length);
 
         // If decrypting, reverse the shift
-        if (mode === "decrypt") {
+        if (currentMode === "decrypt") {
             actualShift = (length - (actualShift % length)) % length;
         }
 
         return str.split("").map(char => {
-            const indexLower = alphabet.indexOf(char);
-            if (indexLower !== -1) {
-                return alphabet[(indexLower + actualShift) % length];
+            const searchChar = currentCase === "upper" ? char.toUpperCase() : char;
+            const index = alphabet.indexOf(searchChar);
+            if (index !== -1) {
+                return alphabet[(index + actualShift) % length];
             }
-
-            const indexUpper = alphabetUpper.indexOf(char);
-            if (indexUpper !== -1) {
-                return alphabetUpper[(indexUpper + actualShift) % length];
-            }
-
-            return char;
+            return currentCase === "upper" ? char.toUpperCase() : char;
         }).join("");
     };
 
@@ -73,13 +69,13 @@ export default function MainScreen({ solvePuzzle, solved, solvedTrigger }) {
     useEffect(() => {
         if (!config.hasLinkedPuzzles) {
             const currentMode = mode || "encrypt";
-            setOutputText(caesarCipher(inputText, shift, currentMode, lang));
+            setOutputText(caesarCipher(inputText, shift, currentMode, lang, caseOption));
         }
-    }, [inputText, shift, mode, lang, config.hasLinkedPuzzles]);
+    }, [inputText, shift, mode, lang, caseOption, config.hasLinkedPuzzles]);
 
     const handleModeClick = (action) => {
         if (config.hasLinkedPuzzles) {
-            const result = caesarCipher(inputText, shift, action, lang);
+            const result = caesarCipher(inputText, shift, action, lang, caseOption);
             setOutputText(result);
             solvePuzzle(result);
         } else {
@@ -87,7 +83,7 @@ export default function MainScreen({ solvePuzzle, solved, solvedTrigger }) {
         }
     };
 
-    const alphabetLength = getAlphabet(lang).length;
+    const alphabetLength = getAlphabet(lang, caseOption).length;
     const hasScreenFrame = config.skin === THEMES.RETRO || config.skin === THEMES.FUTURISTIC;
 
     const caesarContent = (
@@ -119,6 +115,28 @@ export default function MainScreen({ solvePuzzle, solved, solvedTrigger }) {
             </div>
 
             <div className="controls">
+                <div className="control-group mode-switch">
+                    <button
+                        className={caseOption === "both" ? "active" : ""}
+                        onClick={() => {
+                            setCaseOption("both");
+                        }}
+                    >
+                        {I18n.getTrans("i.caseBoth") || "Aa"}
+                    </button>
+                    <button
+                        className={caseOption === "upper" ? "active" : ""}
+                        onClick={() => {
+                            setCaseOption("upper");
+                            if (shift >= (getAlphabet(lang, "upper").length - 1)) {
+                                setShift(1);
+                            }
+                        }}
+                    >
+                        {I18n.getTrans("i.caseUpper") || "AA"}
+                    </button>
+                </div>
+
                 <div className="control-group">
                     <label>{I18n.getTrans("i.shift")}</label>
                     <input

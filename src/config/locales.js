@@ -7,7 +7,9 @@ export let LOCALES = {
     "i.inputLabel": "Input",
     "i.inputPlaceholder": "Type your message here...",
     "i.outputLabel": "Result",
-    "i.outputPlaceholder": "The result will appear here..."
+    "i.outputPlaceholder": "The result will appear here...",
+    "i.caseBoth": "Aa",
+    "i.caseUpper": "AA"
   },
   es: {
     "i.caesarTitle": "Cifrado César",
@@ -17,7 +19,9 @@ export let LOCALES = {
     "i.inputLabel": "Entrada",
     "i.inputPlaceholder": "Escribe tu mensaje aquí...",
     "i.outputLabel": "Resultado",
-    "i.outputPlaceholder": "El resultado aparecerá aquí..."
+    "i.outputPlaceholder": "El resultado aparecerá aquí...",
+    "i.caseBoth": "Aa",
+    "i.caseUpper": "AA"
   },
   sr: {
     "i.caesarTitle": "Cezarova Šifra",
@@ -27,6 +31,8 @@ export let LOCALES = {
     "i.inputLabel": "Ulaz",
     "i.inputPlaceholder": "Unesite poruku ovde...",
     "i.outputLabel": "Rezultat",
-    "i.outputPlaceholder": "Rezultat će se pojaviti ovde..."
+    "i.outputPlaceholder": "Rezultat će se pojaviti ovde...",
+    "i.caseBoth": "Aa",
+    "i.caseUpper": "AA"
   },
 };
